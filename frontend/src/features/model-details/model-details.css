@@ -1,0 +1,9 @@
+.back { margin-top: 24px; }
+.model-identity { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.description { margin: 24px 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; padding: 24px 0; border-top: 1px solid var(--cp-border); border-bottom: 1px solid var(--cp-border); }
+.detail-section { margin-top: 32px; }
+.source-id { display: block; margin-top: 8px; }
+@media (max-width: 640px) {
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}

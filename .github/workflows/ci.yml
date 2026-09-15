@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: "0.11.16"
+          python-version: "3.14"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: helm/kind-action@06c1ae10762d3b9c1644e7fe69596ae519e015a2 # v1.15.0
+        with:
+          install_only: true
+      - name: Scan Git history
+        run: |
+          docker run --rm --network none -v "$PWD:/repo:ro" \
+            -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0=/repo \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            git /repo --redact --log-opts=--all
+      - name: Lint, build and unit tests
+        run: make test
+      - name: Audit locked dependencies
+        run: |
+          uv audit --frozen --directory backend
+          npm --prefix frontend audit
+      - name: Compile Azure templates without credentials
+        run: |
+          for template in main seed-job apps vault-network; do
+            az bicep build --file "infra/$template.bicep" --stdout > /dev/null
+          done
+      - name: Start kind and seed synthetic data
+        run: |
+          make up
+          CATALOG_FILE=examples/catalogue.json AZURE_FILE=examples/azure-models.json make seed
+      - name: Verify database, deployed images and browser workflows
+        run: make verify
+      - name: Collect diagnostics on failure
+        if: failure()
+        run: |
+          kubectl --kubeconfig .local/kubeconfig -n model-catalogue get pods -o wide
+          make logs
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with:
+          name: browser-failure-artifacts
+          path: frontend/test-results/
+          retention-days: 7

@@ -1,0 +1,4 @@
+.comparison { margin: 24px 0; padding-bottom: 16px; border-bottom: 1px solid var(--cp-border); }
+.comparison th { min-width: 140px; }
+.comparison th button { margin-top: 8px; }
+.section-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin: 24px 0 12px; }

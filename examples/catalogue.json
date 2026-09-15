@@ -1,0 +1,40 @@
+{
+  "description": "Synthetic development fixtures. These are not real models or provider offerings.",
+  "models": {
+    "demo/cedar-small": {
+      "name": "Demo Cedar Small (synthetic)",
+      "description": "A fictional model for testing the catalogue workflow.",
+      "limit": { "context": 8192, "output": 1024 }
+    },
+    "demo/cedar-reasoner": {
+      "name": "Demo Cedar Reasoner (synthetic)",
+      "reasoning": true,
+      "limit": { "context": 32768, "output": 4096 }
+    }
+  },
+  "providers": {
+    "demo": {
+      "name": "Synthetic provider",
+      "models": {
+        "cedar-small": {
+          "name": "Demo Cedar Small (synthetic)",
+          "cost": { "input": 0.1, "output": 0.2 }
+        },
+        "cedar-reasoner": {
+          "name": "Demo Cedar Reasoner (synthetic)",
+          "reasoning": true
+        }
+      }
+    },
+    "azure": {
+      "name": "Synthetic Azure listing",
+      "models": {
+        "cedar-small": {
+          "name": "Demo Cedar Small (synthetic)",
+          "cost": { "input": 0.2, "output": 0.4 },
+          "limit": { "context": 8192, "output": 1024 }
+        }
+      }
+    }
+  }
+}

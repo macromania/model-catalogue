@@ -1,0 +1,20 @@
+{
+  "description": "Synthetic metadata only. This is not an Azure availability claim.",
+  "fetched_at": "2026-01-01T00:00:00Z",
+  "api_version": "2024-10-01",
+  "locations": {
+    "example-region": {
+      "value": [
+        {
+          "model": {
+            "name": "cedar-small",
+            "version": "example-v1",
+            "format": "Synthetic",
+            "lifecycleStatus": "ExampleOnly",
+            "skus": [{ "name": "ExampleSKU" }]
+          }
+        }
+      ]
+    }
+  }
+}
