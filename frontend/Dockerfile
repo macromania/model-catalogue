@@ -7,7 +7,7 @@ ARG UI_PORT
 ARG VITE_PORT
 RUN UI_PORT="$UI_PORT" VITE_PORT="$VITE_PORT" npm run build
 
-FROM nginxinc/nginx-unprivileged:1.28-alpine
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 USER root
 RUN rm /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 nginx.conf.template /etc/nginx/templates/default.conf.template
